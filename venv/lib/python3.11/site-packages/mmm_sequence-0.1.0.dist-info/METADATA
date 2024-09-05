@@ -1,0 +1,26 @@
+Metadata-Version: 2.1
+Name: mmm-sequence
+Version: 0.1.0
+Summary: A package for generating and analyzing max-minus-min sequences
+Home-page: https://github.com/jackaldenryan/mmm-sequence
+Author: Jack Ryan
+Author-email: jackaldenryan@gmail.com
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.11.9
+Description-Content-Type: text/markdown
+Requires-Dist: numpy
+Requires-Dist: matplotlib
+Requires-Dist: graphviz
+Requires-Dist: click
+
+## Setup on MacOS
+
+> brew install python-tk@3.11
+
+> python3.11 -m venv venv
+
+> source venv/bin/activate
+
+> pip install -r requirements.txt
