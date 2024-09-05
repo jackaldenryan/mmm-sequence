@@ -1,2 +1,0 @@
-[console_scripts]
-mmm-sequence = mmm_sequence.cli:cli
