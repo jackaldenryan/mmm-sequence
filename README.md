@@ -1,6 +1,6 @@
 # Max-Minus-Min Sequence Analysis
 
-This tool is for generating, visualizing, and analyzing max-minus-min sequences (MMM sequences) based on various initial conditions. An MMM sequence is always defined by a(0) = x, a(1) = y, a(2) = z, and a(n) = max(a(n-1), a(n-2), a(n-3)) - min(a(n-1), a(n-2), a(n-3)) = max(previous 3 terms) - min(previous 3 terms) . For example, one MMM sequence might go [1, 2, 3, 2, 1, 2, 1, 1, 1, 0, 1, 1, 1 ...].
+This tool is for generating, visualizing, and analyzing max-minus-min sequences (MMM sequences) based on various initial conditions. An MMM sequence is always defined by a(0) = x, a(1) = y, a(2) = z, and a(n) = max(a(n-1), a(n-2), a(n-3)) - min(a(n-1), a(n-2), a(n-3)) = max(previous 3 terms) - min(previous 3 terms). For example, one MMM sequence might go [1, 2, 3, 2, 1, 2, 1, 1, 1, 0, 1, 1, 1 ...].
 
 I have been exploring the properties of these sequences as a fun side project. For instance, one nice property is that if S is an MMM sequence, then so is a*S for any a. Using our example above, then we can be sure that [2,4,6,4,2 ...] is a valid MMM sequence using a=2.
 
