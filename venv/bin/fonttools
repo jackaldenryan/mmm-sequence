@@ -1,4 +1,4 @@
-#!/Users/jackryan/Desktop/mmm-sequence/venv/bin/python3.11
+#!/Users/jackryan/Desktop/Projects-non-work/mmm-sequence/venv/bin/python3.11
 # -*- coding: utf-8 -*-
 import re
 import sys

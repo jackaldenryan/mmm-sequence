@@ -4,31 +4,50 @@ This tool is for generating, visualizing, and analyzing max-minus-min sequences 
 
 I have been exploring the properties of these sequences as a fun side project. For instance, one nice property is that if S is an MMM sequence, then so is a*S for any a. Using our example above, then we can be sure that [2,4,6,4,2 ...] is a valid MMM sequence using a=2.
 
-## Setup on MacOS
+## Setup
 
+1. Clone the repository:
+```bash
+git clone https://github.com/jackaldenryan/mmm-sequence.git
+cd mmm-sequence
 ```
+
+2. Install Python 3.11 and tkinter (required for plotting):
+```bash
+# On MacOS
 brew install python-tk@3.11
+
+# On Ubuntu/Debian
+sudo apt-get install python3.11 python3.11-tk
+
+# On Windows
+# Download Python 3.11 from python.org (tkinter is included)
 ```
-```
+
+3. Create and activate a virtual environment:
+```bash
 python3.11 -m venv venv
+source venv/bin/activate  # On Unix/MacOS
+# OR
+venv\Scripts\activate  # On Windows
 ```
-```
-source venv/bin/activate
-```
-```
+
+4. Install dependencies:
+```bash
 pip install -r requirements.txt
 ```
 
 ## CLI Commands
 
+All commands should be run from the project root directory.
 
 ### Plot Sequence
 
 Generate and plot a max-minus-min sequence, given initialization. If max-points are not given, it plots until the sequence first reaches zero, indicating it has converged to its stable repeating pattern of [a, a, a, 0, a, a, a, 0, ...] for some a which all MMM sequences converge to.
 
 Example:
-```
-python cli.py plot-seq --init 5 7 11 --max-points 20
+```bash
+python mmm_sequence/cli.py plot-seq --init 5 7 11 --max-points 20
 ```
 
 ### Plot Multiple Sequences
@@ -44,10 +63,10 @@ Categories (of specifying the set of inits to use):
     - init = [x, y, z] for all possible combinations of x, y, and z in the specified ranges
 
 Example:
-```
-python cli.py plot-seqs --inits-category random --n 5 --max-val 100
-python cli.py plot-seqs --inits-category As_Ds --min-a 0 --max-a 10 --min-d 0 --max-d 10
-python cli.py plot-seqs --inits-category Xs_Ys_Zs --min-x 0 --max-x 5 --min-y 0 --max-y 5 --min-z 0 --max-z 5
+```bash
+python mmm_sequence/cli.py plot-seqs --inits-category random --n 5 --max-val 100
+python mmm_sequence/cli.py plot-seqs --inits-category As_Ds --min-a 0 --max-a 10 --min-d 0 --max-d 10
+python mmm_sequence/cli.py plot-seqs --inits-category Xs_Ys_Zs --min-x 0 --max-x 5 --min-y 0 --max-y 5 --min-z 0 --max-z 5
 ```
 
 ### 3D Plot of Convergence Data
@@ -57,9 +76,9 @@ Create a 3D plot with the x-y plane being A and D and the z-axis being either co
 Plot this to look at some interesting fractals!
 
 Example:
-```
-python cli.py plot-conv-data-3d --type time --min-a 0 --max-a 100 --min-d 0 --max-d 100
-python cli.py plot-conv-data-3d --type value --min-a 0 --max-a 100 --min-d 0 --max-d 100
+```bash
+python mmm_sequence/cli.py plot-conv-data-3d --type time --min-a 0 --max-a 100 --min-d 0 --max-d 100
+python mmm_sequence/cli.py plot-conv-data-3d --type value --min-a 0 --max-a 100 --min-d 0 --max-d 100
 ```
 
 ### 2D Plot of Convergence Data
@@ -67,9 +86,9 @@ python cli.py plot-conv-data-3d --type value --min-a 0 --max-a 100 --min-d 0 --m
 Create a 2D with the x-axis as either A or D, and the y-axis as either convergence value or convergence time. This is equivalent to looking at a cross section of the 3D plot described in the previous section.
 
 Example:
-```
-python cli.py plot-conv-data-2d --type time --vary-param a --min-vary 0 --max-vary 100 --fixed-val 50
-python cli.py plot-conv-data-2d --type value --vary-param d --min-vary 0 --max-vary 100 --fixed-val 50
+```bash
+python mmm_sequence/cli.py plot-conv-data-2d --type time --vary-param a --min-vary 0 --max-vary 100 --fixed-val 50
+python mmm_sequence/cli.py plot-conv-data-2d --type value --vary-param d --min-vary 0 --max-vary 100 --fixed-val 50
 ```
 
 ### Generate Sequences from Seed Sequence
@@ -80,8 +99,8 @@ Available functions for the seed sequence:
 primes, naturals, randoms, randoms_inc, odds, odds_random, odds_skip, primes_random, primes_even, primes_odd
 
 Example:
-```
-python cli.py seed-seq-for-inits --seq-func primes_random --n 100
+```bash
+python mmm_sequence/cli.py seed-seq-for-inits --seq-func primes_random --n 100
 ```
 
 ### Generate Backwards Tree
@@ -92,6 +111,6 @@ For a given end of a MMM sequence, generate all possible paths that lead to that
 - negatives: if False, then does not include steps into the negative numbers
 
 Example:
-```
-python cli.py gen-backwards-tree --end 5 7 11 --n 5 --negatives True
+```bash
+python mmm_sequence/cli.py gen-backwards-tree --end 5 7 11 --n 5 --negatives True
 ```

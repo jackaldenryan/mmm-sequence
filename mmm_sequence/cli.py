@@ -1,6 +1,6 @@
 import click
-from .core import *
-from .visualization import *
+from core import *
+from visualization import *
 
 
 @click.group()

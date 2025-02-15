@@ -4,3 +4,4 @@ __pycache__/
 todos.txt
 archive/
 *.egg-info/
+venv/
