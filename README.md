@@ -24,7 +24,19 @@ sudo apt-get install python3.11 python3.11-tk
 # Download Python 3.11 from python.org (tkinter is included)
 ```
 
-3. Create and activate a virtual environment:
+3. Install Graphviz (required for tree visualization):
+```bash
+# On MacOS
+brew install graphviz
+
+# On Ubuntu/Debian
+sudo apt-get install graphviz
+
+# On Windows
+# Download from https://graphviz.org/download/
+```
+
+4. Create and activate a virtual environment:
 ```bash
 python3.11 -m venv venv
 source venv/bin/activate  # On Unix/MacOS
@@ -32,7 +44,7 @@ source venv/bin/activate  # On Unix/MacOS
 venv\Scripts\activate  # On Windows
 ```
 
-4. Install dependencies:
+5. Install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
@@ -110,7 +122,9 @@ For a given end of a MMM sequence, generate all possible paths that lead to that
 - n: the number of backward steps to take
 - negatives: if False, then does not include steps into the negative numbers
 
+In the visualization, nodes are highlighted in green if their value is not a multiple of the sequence's convergence value. If there are three white nodes in a row, everything after that must be a white node.
+
 Example:
 ```bash
-python mmm_sequence/cli.py gen-backwards-tree --end 5 7 11 --n 5 --negatives True
+python mmm_sequence/cli.py gen-backwards-tree --end 20 10 10 --n 5 --negatives False
 ```

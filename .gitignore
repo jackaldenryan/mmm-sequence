@@ -5,3 +5,4 @@ todos.txt
 archive/
 *.egg-info/
 venv/
+scratch.py

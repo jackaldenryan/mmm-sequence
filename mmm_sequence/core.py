@@ -1,4 +1,5 @@
 import random
+import numpy as np
 
 ##########################################################
 # Max Minus Min Sequence
@@ -6,7 +7,7 @@ import random
 
 
 def max_minus_min_seq(init, max_points=None):
-    seq = init
+    seq = list(init)
     if max_points is None:
         while seq[-1] > 0:
             prev1 = seq[-1]
@@ -91,21 +92,18 @@ def generate_data(seqs):
 class TreeNode:
     def __init__(self, value):
         self.value = value
-        self.left = None
-        self.right = None
+        self.children = []
+        self.ignored = False
+        self.shiftpoint = False
 
     def get_number_of_nodes(self):
-        if self.left is None and self.right is None:
-            return 1
-        if self.left is None:
-            return 1 + self.right.get_number_of_nodes()
-        if self.right is None:
-            return 1 + self.left.get_number_of_nodes()
-        return 1 + self.left.get_number_of_nodes() + self.right.get_number_of_nodes()
+        total = 1
+        for child in self.children:
+            if child:
+                total += child.get_number_of_nodes()
+        return total
 
 
-#
-# TODO: fix this, should be more than one backwards option in cases like x, 17,8,9
 def build_tree(end, n, negatives=False):
     def build_recursive(current, depth):
         if depth == 0:
@@ -113,53 +111,86 @@ def build_tree(end, n, negatives=False):
 
         node = TreeNode(current)
 
+        # If does not have backwards, we return node without children
         has_backwards = (abs(current[0] - current[1]) <= current[2])
         if not has_backwards:
-            # Return node without left or right children
             return node
 
         mx = max(current[0], current[1])
         mn = min(current[0], current[1])
         diff = current[2]
 
-        prev_opt1 = (mx - diff, current[0], current[1])
-        prev_opt2 = (mn + diff, current[0], current[1])
+        child_value_min = (mx - diff, current[0], current[1])
+        child_value_max = (mn + diff, current[0], current[1])
 
-        # Not accounting for several additional options in case mx- diff = min, in which case can choose anything between mx and mn
+        children_values = []
+        children_values.append(child_value_min)
+
         if mx - diff == mn:
-            # TODO implement this
-            # Theres a lot of options, everything from mx to mn inclusive, so probably need to implement an options list rather than var for each
-            pass
+            for i in range(mn+1, mx):
+                children_values.append((i, current[0], current[1]))
 
-        prev_opt1_neg = mx - diff < 0
-        prev_opt2_neg = mn + diff < 0
+        children_values.append(child_value_max)
 
-        if negatives:
-            node.right = build_recursive(prev_opt1, depth - 1)
-            node.left = build_recursive(prev_opt2, depth - 1)
-        else:
-            if not prev_opt1_neg:
-                node.right = build_recursive(prev_opt1, depth - 1)
-            if not prev_opt2_neg:
-                node.left = build_recursive(prev_opt2, depth - 1)
+        # Remove all non unique children values and sort
+        children_values = list(set(children_values))
+        children_values.sort(key=lambda tup: -tup[0])
+
+        opt_negatives = [a < 0 for a, _, _ in children_values]
+
+        children = []
+        for i, tup in enumerate(children_values):
+            if negatives or not opt_negatives[i]:
+                children.append(build_recursive(tup, depth - 1))
+        node.children = children
 
         return node
-
-    return build_recursive(tuple(end), n)
+    root = build_recursive(tuple(end), n)
+    seq = max_minus_min_seq(list(end))
+    prev = root
+    for val in seq[1:]:
+        node = TreeNode((val, 0, 0))
+        node.children = [prev]
+        prev = node
+    return prev
 
 
 ##########################################################
 # Other sequences
 ##########################################################
 
-def primes(n):
+def primes(n, reverse=False):
     primes = []
     num = 2
     while len(primes) < n:
         if all(num % p for p in primes):
             primes.append(num)
         num += 1
+    if reverse:
+        primes.reverse()
     return primes
+
+
+def prime_powers(n, k=2):
+    return [p**k for p in primes(n)]
+
+
+def primorials(n):
+    result = [1]
+    primes_list = primes(n)
+    for i, p in enumerate(primes_list):
+        result.append(result[i] * p)
+    return result
+
+
+def prime_products(n, k=2):
+    primes_list = primes(k*n + k)
+    result = []
+    for i in range(0, k*n, k):
+        product = np.prod(primes_list[i:i+k])
+        result.append(product)
+
+    return result
 
 
 def naturals(n):

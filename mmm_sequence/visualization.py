@@ -86,18 +86,24 @@ def visualize_tree(root):
     dot = graphviz.Digraph()
     dot.attr(rankdir='RL')  # Right to Left orientation
 
-    def add_nodes(node, is_root=False):
+    def add_nodes(node, conv_value):
         if node:
-            label = str(node.value) if is_root else str(node.value[0])
-            dot.node(str(id(node)), label)
-            if node.left:
-                dot.edge(str(id(node)), str(id(node.left)))
-                add_nodes(node.left)
-            if node.right:
-                dot.edge(str(id(node)), str(id(node.right)))
-                add_nodes(node.right)
+            value = node.value[0]
+            label = str(value)
 
-    add_nodes(root, is_root=True)
+            # Check if the value is a multiple of conv_value
+            if value % conv_value != 0:
+                dot.node(str(id(node)), label, style='filled', fillcolor='lightgreen')
+            else:
+                dot.node(str(id(node)), label)
+
+            for child in node.children:
+                if child:
+                    dot.edge(str(id(node)), str(id(child)))
+                    add_nodes(child, conv_value)
+
+    conv_value = root.children[0].value[0]
+    add_nodes(root, conv_value)
     return dot
 
 
@@ -108,12 +114,40 @@ def view_dot(dot):
         tmp_name += '.svg'  # dot.render adds the suffix
 
     try:
-        # Open the SVG file in the default web browser
-        webbrowser.open('file://' + os.path.realpath(tmp_name))
+        # Try to open with specific browsers in order of preference
+        file_url = 'file://' + os.path.realpath(tmp_name)
+        success = False
+        
+        # Try Chrome first
+        try:
+            chrome_path = 'open -a "Google Chrome" %s'
+            webbrowser.get(chrome_path).open(file_url)
+            success = True
+        except webbrowser.Error:
+            pass
+            
+        # Try Safari next
+        if not success:
+            try:
+                safari_path = 'open -a "Safari" %s'
+                webbrowser.get(safari_path).open(file_url)
+                success = True
+            except webbrowser.Error:
+                pass
+        
+        # If specific browsers fail, try the default
+        if not success:
+            if not webbrowser.open(file_url):
+                print(f"Could not open browser automatically. Please open this file manually: {tmp_name}")
+            else:
+                success = True
 
-        print("Visualization opened in browser.")
+        if success:
+            print("Visualization opened in browser.")
+        
         print("Press Enter to close the visualization and exit, or type 'keep' to keep the svg file shown.")
 
+        user_input = ''
         while True:
             user_input = input().strip().lower()
             if user_input == 'keep':
