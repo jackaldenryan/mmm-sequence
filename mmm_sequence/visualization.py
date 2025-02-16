@@ -69,6 +69,16 @@ def create_interactive_plot(data, z_param):
     if z_param not in ['time', 'value']:
         raise ValueError("z_param must be either 'time' or 'value'")
 
+    # Store original settings
+    original_backend = plt.get_backend()
+    original_interactive = plt.isinteractive()
+    original_raise_window = plt.rcParams['figure.raise_window']
+
+    # Temporarily change settings for this plot
+    plt.switch_backend('TkAgg')
+    plt.ion()  # Enable interactive mode
+    plt.rcParams['figure.raise_window'] = True
+
     root = tk.Tk()
     root.title(f"Interactive 3D Plot - Convergence {z_param}")
 
@@ -78,6 +88,12 @@ def create_interactive_plot(data, z_param):
     canvas = FigureCanvasTkAgg(fig, master=root)
     canvas.draw()
     canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
+
+    # Restore original settings
+    plt.switch_backend(original_backend)
+    if not original_interactive:
+        plt.ioff()
+    plt.rcParams['figure.raise_window'] = original_raise_window
 
     root.mainloop()
 
@@ -107,62 +123,54 @@ def visualize_tree(root):
     return dot
 
 
-def view_dot(dot):
-    with tempfile.NamedTemporaryFile(suffix='.svg', delete=False) as tmp:
-        tmp_name = tmp.name
-        dot.render(tmp_name, format='svg', cleanup=True)
-        tmp_name += '.svg'  # dot.render adds the suffix
+def view_dot(dot, display_in_browser=False):
+    # Create MMM_sequence directory if it doesn't exist
+    viz_dir = os.path.join(os.getcwd(), 'backwards_trees')
+    if not os.path.exists(viz_dir):
+        os.makedirs(viz_dir)
+    
+    # Create a unique filename using timestamp
+    timestamp = time.strftime("%Y%m%d_%H%M%S")
+    file_path = os.path.join(viz_dir, f'tree_{timestamp}')
+    
+    # Render the visualization
+    dot.render(file_path, format='svg', cleanup=True)
+    file_path += '.svg'  # dot.render adds the suffix
 
-    try:
-        # Try to open with specific browsers in order of preference
-        file_url = 'file://' + os.path.realpath(tmp_name)
-        success = False
-        
-        # Try Chrome first
+    # Read the SVG content
+    with open(file_path, 'r') as f:
+        svg_content = f.read()
+
+    if display_in_browser:
         try:
-            chrome_path = 'open -a "Google Chrome" %s'
-            webbrowser.get(chrome_path).open(file_url)
-            success = True
-        except webbrowser.Error:
-            pass
+            # Try to open with specific browsers in order of preference
+            file_url = 'file://' + os.path.realpath(file_path)
+            success = False
             
-        # Try Safari next
-        if not success:
+            # Try Chrome first
             try:
-                safari_path = 'open -a "Safari" %s'
-                webbrowser.get(safari_path).open(file_url)
+                chrome_path = 'open -a "Google Chrome" %s'
+                webbrowser.get(chrome_path).open(file_url)
                 success = True
             except webbrowser.Error:
                 pass
-        
-        # If specific browsers fail, try the default
-        if not success:
-            if not webbrowser.open(file_url):
-                print(f"Could not open browser automatically. Please open this file manually: {tmp_name}")
-            else:
-                success = True
+                
+            # Try Safari next
+            if not success:
+                try:
+                    safari_path = 'open -a "Safari" %s'
+                    webbrowser.get(safari_path).open(file_url)
+                    success = True
+                except webbrowser.Error:
+                    pass
+            
+            # If specific browsers fail, try the default
+            if not success:
+                if not webbrowser.open(file_url):
+                    print(f"Could not open browser automatically. Please open this file manually: {file_path}")
 
-        if success:
-            print("Visualization opened in browser.")
-        
-        print("Press Enter to close the visualization and exit, or type 'keep' to keep the svg file shown.")
-
-        user_input = ''
-        while True:
-            user_input = input().strip().lower()
-            if user_input == 'keep':
-                print(f"File kept at: {tmp_name}")
-                return
-            elif user_input == '':
-                break
-            else:
-                print("Invalid input. Press Enter to exit or type 'keep' to keep the file.")
-
-    finally:
-        if user_input != 'keep':
-            try:
-                os.unlink(tmp_name)
-                print("Temporary file deleted.")
-            except Exception as e:
-                print(f"Note: Could not remove temporary file {tmp_name}: {e}")
-                print("The file will be deleted on system reboot.")
+        except Exception as e:
+            print(f"Error displaying visualization: {e}")
+    
+    # Return the SVG content for notebook display
+    return svg_content

@@ -49,82 +49,95 @@ venv\Scripts\activate  # On Windows
 pip install -r requirements.txt
 ```
 
-## CLI Commands
+## Usage
 
-All commands should be run from the project root directory.
+The functionality is provided through a Jupyter notebook interface. To start, run:
+```bash
+jupyter notebook mmm_sequence/main.ipynb
+```
 
-### Plot Sequence
+The notebook contains the following cells, each corresponding to a different analysis function:
 
-Generate and plot a max-minus-min sequence, given initialization. If max-points are not given, it plots until the sequence first reaches zero, indicating it has converged to its stable repeating pattern of [a, a, a, 0, a, a, a, 0, ...] for some a which all MMM sequences converge to.
+### Plot Single Sequence
+
+Generate and plot a max-minus-min sequence with specified initialization. Parameters:
+- `init`: List of 3 integers for initial values
+- `max_points`: (Optional) Maximum number of points to generate. If not specified, plots until convergence.
 
 Example:
-```bash
-python mmm_sequence/cli.py plot-seq --init 5 7 11 --max-points 20
+```python
+init = [5, 7, 11]
+max_points = 20  # optional
+plot_seq(init, max_points)
 ```
 
 ### Plot Multiple Sequences
 
-Generate and plot multiple MMM sequences using a set of inits.
+Generate and plot multiple MMM sequences using different initialization methods:
 
-Categories (of specifying the set of inits to use):
-- random
-    - Each of the n inits used is an independent random number from 0 to max-val
-- As_Ds
-    - init = [a, a+d, a+2*d] for all possible combinations of a and d in the specified ranges
-- Xs_Ys_Zs
-    - init = [x, y, z] for all possible combinations of x, y, and z in the specified ranges
+1. Random initialization:
+   - `n`: Number of sequences to generate
+   - `max_val`: Maximum value for random initialization
+
+2. As_Ds initialization (init = [a, a+d, a+2*d]):
+   - `min_a/max_a`: Range for parameter a
+   - `min_d/max_d`: Range for parameter d
+
+3. Xs_Ys_Zs initialization (init = [x, y, z]):
+   - `min_x/max_x`: Range for x values
+   - `min_y/max_y`: Range for y values
+   - `min_z/max_z`: Range for z values
+
+### 3D Convergence Visualization
+
+Create interactive 3D plots showing how sequences converge. Parameters:
+- `type`: Either 'time' (steps until convergence) or 'value' (final value before convergence)
+- `min_a/max_a`: Range for parameter a
+- `min_d/max_d`: Range for parameter d
+
+The resulting plot shows fascinating fractal-like patterns in the convergence behavior.
+
+### 2D Convergence Analysis
+
+Create 2D plots showing convergence behavior while varying one parameter. Parameters:
+- `type`: Either 'time' or 'value'
+- `vary_param`: Choose 'a' or 'd' to vary
+- `min_vary/max_vary`: Range for the varying parameter
+- `fixed_val`: Value for the fixed parameter
+
+### Seed Sequence Analysis
+
+Analyze MMM sequences derived from sliding windows over seed sequences. Available seed functions:
+- `primes`
+- `naturals`
+- `randoms`
+- `randoms_inc`
+- `odds`
+- `odds_random`
+- `odds_skip`
+- `primes_random`
+- `primes_even`
+- `primes_odd`
+
+Parameters:
+- `seq_func`: Name of the seed function to use
+- `n`: Length of seed sequence
+
+### Backwards Tree Generation
+
+Visualize all possible paths that could lead to a given sequence end. Parameters:
+- `end`: List of 3 integers representing the end of an MMM sequence
+- `n`: Number of backward steps to generate
+- `negatives`: Whether to include paths through negative numbers
+
+The visualization highlights nodes in green if their value is not a multiple of the sequence's convergence value. Three consecutive white nodes indicate all subsequent nodes must also be white.
 
 Example:
-```bash
-python mmm_sequence/cli.py plot-seqs --inits-category random --n 5 --max-val 100
-python mmm_sequence/cli.py plot-seqs --inits-category As_Ds --min-a 0 --max-a 10 --min-d 0 --max-d 10
-python mmm_sequence/cli.py plot-seqs --inits-category Xs_Ys_Zs --min-x 0 --max-x 5 --min-y 0 --max-y 5 --min-z 0 --max-z 5
+```python
+end = [20, 10, 10]
+n = 5
+negatives = False
+gen_backwards_tree(end, n, negatives)
 ```
 
-### 3D Plot of Convergence Data
-
-Create a 3D plot with the x-y plane being A and D and the z-axis being either convergence value or convergence time. Convergence time is the number of steps until reaching zero in the MMM sequence, and convergence value is always the value just before the first zero.
-
-Plot this to look at some interesting fractals!
-
-Example:
-```bash
-python mmm_sequence/cli.py plot-conv-data-3d --type time --min-a 0 --max-a 100 --min-d 0 --max-d 100
-python mmm_sequence/cli.py plot-conv-data-3d --type value --min-a 0 --max-a 100 --min-d 0 --max-d 100
-```
-
-### 2D Plot of Convergence Data
-
-Create a 2D with the x-axis as either A or D, and the y-axis as either convergence value or convergence time. This is equivalent to looking at a cross section of the 3D plot described in the previous section.
-
-Example:
-```bash
-python mmm_sequence/cli.py plot-conv-data-2d --type time --vary-param a --min-vary 0 --max-vary 100 --fixed-val 50
-python mmm_sequence/cli.py plot-conv-data-2d --type value --vary-param d --min-vary 0 --max-vary 100 --fixed-val 50
-```
-
-### Generate Sequences from Seed Sequence
-
-Analyze the MMM sequences derived from using inits derived from a sliding window over some outside seed sequence (such as primes). Specifically, this plots all the MMM sequences derived, as well as how convergence value and time vary as the sliding window moves.
-
-Available functions for the seed sequence:
-primes, naturals, randoms, randoms_inc, odds, odds_random, odds_skip, primes_random, primes_even, primes_odd
-
-Example:
-```bash
-python mmm_sequence/cli.py seed-seq-for-inits --seq-func primes_random --n 100
-```
-
-### Generate Backwards Tree
-
-For a given end of a MMM sequence, generate all possible paths that lead to that end, taking at most n backward steps.
-- end: requires 3 integers, representing the end of an MMM sequence
-- n: the number of backward steps to take
-- negatives: if False, then does not include steps into the negative numbers
-
-In the visualization, nodes are highlighted in green if their value is not a multiple of the sequence's convergence value. If there are three white nodes in a row, everything after that must be a white node.
-
-Example:
-```bash
-python mmm_sequence/cli.py gen-backwards-tree --end 20 10 10 --n 5 --negatives False
-```
+Each visualization is automatically saved in the `backwards_trees` directory with a timestamp.
