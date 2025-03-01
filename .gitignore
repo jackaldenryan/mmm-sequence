@@ -6,4 +6,5 @@ archive/
 *.egg-info/
 venv/
 scratch.py
+scratch.ipynb
 backwards_trees/

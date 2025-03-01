@@ -141,3 +141,46 @@ gen_backwards_tree(end, n, negatives)
 ```
 
 Each visualization is automatically saved in the `backwards_trees` directory with a timestamp.
+
+### Labeled Backwards Tree Analysis
+
+Analyze and label all possible paths in a backwards tree with detailed information about each value's role in the sequence. This functionality helps investigate hypotheses about sequence properties and patterns.
+
+Parameters:
+- `end_val`: The convergence value to use for the end point (creates an end point of [end_val, end_val, end_val])
+- `n`: Number of backward steps to generate
+- `negatives`: Whether to include paths through negative numbers
+
+Example:
+```python
+end_val = 2
+n = 7
+negatives = False
+print_labeled_backwards_tree([end_val]*3, n, negatives)
+```
+
+The output includes the following labels for each value in each path:
+
+1. **Signature**: A triplet indicating how each value is used in the sliding windows that contain it:
+   - `MAX`: The value is the maximum in the window
+   - `MIN`: The value is the minimum in the window
+   - `MID`: The value is neither the maximum nor minimum in the window
+   - `N/A`: The value cannot be in that position in a sliding window (too close to beginning/end)
+
+   Each signature consists of three positions that represent how the value functions in different sliding windows:
+   - `at_0`: How the value functions when it's the first element in a sliding window [value, next, next+1]
+   - `at_1`: How the value functions when it's the middle element in a sliding window [prev, value, next]
+   - `at_2`: How the value functions when it's the last element in a sliding window [prev-1, prev, value]
+   
+   For example, a signature of (MAX, MID, MIN) means the value is the maximum when it's the first element in a window, neither max nor min when it's the middle element, and the minimum when it's the last element.
+
+2. **Ignored Points**: Boolean indicating if a value is "ignored" in the sequence computation. A value is ignored if its signature never contains MAX or MIN, meaning it doesn't affect the sequence computation.
+
+3. **Shifting Points**: Boolean indicating if a point is a "shifting point". A shifting point occurs when the GCD of the current window [X, Y, Z] is greater than the GCD of the previous window.
+
+4. **Backwards Point Types**: Categorizes each point based on how it behaves in backwards generation:
+   - `BLOCK`: A point [X, Y, Z] where |X - Y| > Z. Backwards blocks cannot be extended backwards and must be at the beginning of a sequence.
+   - `DOUBLE`: A point [X, Y, Z] where |X - Y| < Z. This means the next backwards point has exactly two options.
+   - `MULTI`: A point [X, Y, Z] where |X - Y| = Z. This means the next backwards value can be chosen from a range of numbers.
+
+This analysis helps investigate hypotheses about sequence properties, such as the relationship between signatures, ignored values, and convergence behavior.

@@ -176,3 +176,29 @@ def visualize_backwards_tree(end, n=5, negatives=False, display_in_browser=False
     display(SVG(svg_content))
     
     return root 
+
+
+def print_labeled_backwards_tree(end, n=5, negatives=False):
+    tree = build_tree(end, n, negatives=negatives)
+    paths = get_all_paths(tree)
+    paths_labeled = label_all_paths(paths)
+    for i, path in enumerate(paths_labeled):
+        print(f"Index {i} path:")
+
+        values_only = [item.value if item is not None else None for item in path]
+        print(f"Values: {values_only}")
+
+        signatures_only = [item.signature if item is not None else None for item in path]
+        signatures_only = [(signature.at_0.value, signature.at_1.value, signature.at_2.value) if signature is not None else None for signature in signatures_only]
+        print(f"Signatures: {signatures_only}")
+
+        ignored_points_only = [item.is_ignored if item is not None else None for item in path]
+        print(f"Ignored Points: {ignored_points_only}")
+
+        shifting_points_only = [item.is_shifting_point if item is not None else None for item in path]
+        print(f"Shifting Points: {shifting_points_only}")
+
+        backwards_point_type_only = [item.backwards_point_type.value if item is not None else None for item in path]
+        print(f"Backwards Point Types: {backwards_point_type_only}")
+
+        print()
