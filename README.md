@@ -56,9 +56,15 @@ Scope: all sequences studied here are over non-negative integers. Negatives are 
 
 **H2.** Three consecutive increasing primes as init always converge to 1.
 
-**H3.** The GCD of all triplet GCDs equals the convergence value, even excluding the convergent tail triplets.
-
 **H4.** Extending backwards greedily toward a fast decrease (including through negatives when allowed) quickly forces a backwards block.
+
+### Hypotheses proven false
+
+**H3 (Aggregate triplet GCD).** The GCD of all triplet GCDs was hypothesized to equal the convergence value, even when the convergent tail triplets were excluded. This is false because the triplet GCDs form a divisibility chain `g(0) | g(1) | g(2) | ...`, so the GCD of any finite list beginning with `g(0)` is always `g(0)`. For example, the sequence beginning `[2, 3, 4]` is
+
+`2, 3, 4, 2, 2, 2, 0, ...`
+
+Its triplet GCDs begin `1, 1, 2, 2, ...`, whose collective GCD is `1`, while the convergence value is `2`.
 
 ### Open questions
 
